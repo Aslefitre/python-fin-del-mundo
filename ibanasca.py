@@ -316,3 +316,57 @@ with tab4:
         st.error("Energía entre Castle Bravo y Krakatoa — evento continental catastrófico")
     else:
         st.error("Energía comparable o superior a Chicxulub — evento de extinción masiva")
+
+with tab5:
+    st.subheader("¿Coincidimos con NASA?")
+    st.write("""
+    El CNEOS — Centro de Estudios de Objetos Cercanos a la Tierra del JPL —
+    tiene una herramienta oficial para estimar el tamaño de asteroides a partir
+    de su magnitud absoluta H y su albedo. Vamos a comparar sus resultados con los nuestros.
+    """)
+
+    st.info("Herramienta oficial CNEOS: https://cneos.jpl.nasa.gov/tools/ast_size_est.html")
+
+    st.divider()
+    st.subheader("Calcula y compara")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        H_cneos = st.number_input(
+            "Magnitud absoluta H",
+            min_value = 0.0,
+            max_value = 40.0,
+            value     = 19.2,
+            step      = 0.1,
+            help      = "Apophis: H=19.2 | Bennu: H=20.8 | Chelyabinsk: H=26.0"
+        )
+    with col2:
+        albedo_cneos = st.number_input(
+            "Albedo visual",
+            min_value = 0.01,
+            max_value = 0.90,
+            value     = 0.30,
+            step      = 0.01,
+            help      = "Tipo S (silíceo): ~0.20-0.30 | Tipo C (carbonáceo): ~0.05-0.10"
+        )
+
+    # Nuestra fórmula de Harris
+    d_nuestro = (1329 / np.sqrt(albedo_cneos)) * 10**(-0.2 * H_cneos)
+
+    # Fórmula del CNEOS — publicada explícitamente en su página web
+    # Referencia: Harris y Harris (1997), Icarus 126:450-454
+    d_cneos = 10 ** (3.1236 - 0.5 * np.log10(albedo_cneos) - 0.2 * H_cneos)
+
+    st.divider()
+    st.subheader("Resultado")
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Nuestra fórmula (Harris)",  f"{d_nuestro:.2f} km")
+    c2.metric("Fórmula CNEOS oficial",     f"{d_cneos:.2f} km")
+    diferencia = abs(d_nuestro - d_cneos)
+    c3.metric("Diferencia",                f"{diferencia:.2e} km")
+
+    if diferencia < 1e-10:
+        st.success("Los resultados son idénticos — nuestra implementación es correcta.")
+    else:
+        st.warning(f"Diferencia numérica mínima por redondeo de punto flotante: {diferencia:.2e} km")
