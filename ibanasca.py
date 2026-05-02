@@ -159,3 +159,56 @@ with tab2:
     fig_familias.update_yaxes(range=[0, 1])
     fig_familias.update_layout(height=500)
     st.plotly_chart(fig_familias, use_container_width=True)
+
+with tab3:
+    st.subheader("Ficha Individual de Asteroide")
+
+    # La misma clase Asteroide del módulo 5
+    class Asteroide:
+        def __init__(self, nombre, H, albedo, moid, diametro=None):
+            self.nombre   = nombre
+            self.H        = H
+            self.albedo   = albedo
+            self.moid     = moid
+            self.diametro = diametro if diametro else self.calcular_diametro()
+
+        def calcular_diametro(self):
+            if self.H is None or self.albedo is None:
+                return None
+            return (1329 / np.sqrt(self.albedo)) * 10**(-0.2 * self.H)
+
+        def es_pha(self):
+            return self.moid <= 0.05 and self.H <= 22
+
+
+    nombre_sel = st.selectbox(
+        "Selecciona un asteroide",
+        df_filtrado["nombre"].dropna().tolist()
+    )
+
+    if nombre_sel:
+        fila = df_filtrado[
+            df_filtrado["nombre"] == nombre_sel
+        ].iloc[0]
+
+        ast = Asteroide(
+            nombre   = fila["nombre"],
+            H        = fila["H"],
+            albedo   = fila["albedo"] if pd.notna(fila["albedo"]) else 0.14,
+            moid     = fila["moid"],
+            diametro = fila["diameter"] if pd.notna(fila["diameter"]) else None
+        )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(f"### {ast.nombre}")
+            st.metric("Magnitud absoluta H", ast.H)
+            st.metric("Albedo", f"{ast.albedo:.3f}")
+            st.metric("Diámetro estimado", f"{ast.diametro:.3f} km")
+        with col2:
+            st.metric("MOID", f"{ast.moid:.4f} UA")
+            st.metric("Clase orbital", fila["class"])
+            if ast.es_pha():
+                st.error("Este asteroide SI es un PHA")
+            else:
+                st.success("Este asteroide NO es un PHA")
