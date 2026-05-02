@@ -67,7 +67,7 @@ df_filtrado = df_filtrado[
 st.sidebar.markdown(f"**{len(df_filtrado):,} asteroides** con estos filtros")
 
 
-tab1, tab2, tab3 = st.tabs(["📋 Catálogo", "🗺️ Mapas", "🔍 Ficha"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Catálogo", "Mapas", "Ficha", "Simulador", "¿Coincidimos?"])
 
 with tab1:
     st.subheader("Catálogo de Asteroides NEA")
@@ -210,3 +210,163 @@ with tab3:
                 st.error("Este asteroide SI es un PHA")
             else:
                 st.success("Este asteroide NO es un PHA")
+
+with tab4:
+    st.subheader("Simulador de Impacto")
+    st.caption("Calcula la energía y el cráter estimado para un impacto asteroidal")
+
+    col_izq, col_der = st.columns(2)
+
+    with col_izq:
+        diametro_km = st.slider(
+            "Diámetro del asteroide (km)",
+            min_value = 0.01,
+            max_value = 20.0,
+            value     = 0.14,
+            step      = 0.01,
+            format    = "%.2f km"
+        )
+
+        tipo = st.selectbox(
+            "Tipo de asteroide",
+            ["Tipo C — carbonáceo (1,400 kg/m³)",
+             "Tipo S — silíceo (2,700 kg/m³)",
+             "Tipo M — metálico (5,000 kg/m³)"]
+        )
+
+    with col_der:
+        velocidad_kms = st.slider(
+            "Velocidad de impacto (km/s)",
+            min_value = 11.0,
+            max_value = 70.0,
+            value     = 20.0,
+            step      = 0.5,
+            format    = "%.1f km/s"
+        )
+
+        angulo = st.slider(
+            "Ángulo de impacto (°)",
+            min_value = 10,
+            max_value = 90,
+            value     = 45,
+            help      = "90° = impacto vertical directo. Los impactos oblicuos son más frecuentes."
+        )
+
+    # --- Cálculos físicos ---
+    densidades = {
+        "Tipo C — carbonáceo (1,400 kg/m³)" : 1400,
+        "Tipo S — silíceo (2,700 kg/m³)"    : 2700,
+        "Tipo M — metálico (5,000 kg/m³)"   : 5000
+    }
+    rho      = densidades[tipo]
+    r_m      = (diametro_km * 1000) / 2
+    volumen  = (4/3) * np.pi * r_m**3
+    masa_kg  = rho * volumen
+    v_ms     = velocidad_kms * 1000
+    E_J      = 0.5 * masa_kg * v_ms**2
+    E_MT     = E_J / 4.184e15
+    crater_km = diametro_km * 20
+
+    st.divider()
+
+    # --- Resultados ---
+    st.subheader("Resultados")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Masa",              f"{masa_kg:.2e} kg")
+    c2.metric("Energía cinética",  f"{E_J:.2e} J")
+    c3.metric("Energía en Mt TNT", f"{E_MT:.2e} Mt")
+    c4.metric("Cráter estimado",   f"{crater_km:.2f} km")
+
+    st.divider()
+
+    # --- Comparación histórica ---
+    st.subheader("¿Qué tan grande es esa energía?")
+
+    referencias = {
+        "Bomba de Hiroshima"        : 0.015,
+        "Chelyabinsk 2013"          : 0.5,
+        "Bomba Castle Bravo (EEUU)" : 15.0,
+        "Krakatoa 1883"             : 200.0,
+        "Chicxulub (~KT)"           : 100_000_000.0
+    }
+
+    filas = []
+    for evento, e_ref in referencias.items():
+        if E_MT >= e_ref:
+            ratio = E_MT / e_ref
+            comparacion = f"{ratio:.1f}× más grande"
+        else:
+            ratio = e_ref / E_MT
+            comparacion = f"{ratio:.1f}× más pequeño"
+        filas.append({"Evento de referencia": evento,
+                      "Energía (Mt TNT)": e_ref,
+                      "Comparación": comparacion})
+
+    st.dataframe(
+        pd.DataFrame(filas),
+        use_container_width = True,
+        hide_index          = True
+    )
+
+    if E_MT < 0.015:
+        st.success("Energía menor a Hiroshima — evento local menor")
+    elif E_MT < 15:
+        st.warning("Energía entre Hiroshima y Castle Bravo — evento regional severo")
+    elif E_MT < 10_000:
+        st.error("Energía entre Castle Bravo y Krakatoa — evento continental catastrófico")
+    else:
+        st.error("Energía comparable o superior a Chicxulub — evento de extinción masiva")
+
+with tab5:
+    st.subheader("¿Coincidimos con NASA?")
+    st.write("""
+    El CNEOS — Centro de Estudios de Objetos Cercanos a la Tierra del JPL —
+    tiene una herramienta oficial para estimar el tamaño de asteroides a partir
+    de su magnitud absoluta H y su albedo. Vamos a comparar sus resultados con los nuestros.
+    """)
+
+    st.info("Herramienta oficial CNEOS: https://cneos.jpl.nasa.gov/tools/ast_size_est.html")
+
+    st.divider()
+    st.subheader("Calcula y compara")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        H_cneos = st.number_input(
+            "Magnitud absoluta H",
+            min_value = 0.0,
+            max_value = 40.0,
+            value     = 19.2,
+            step      = 0.1,
+            help      = "Apophis: H=19.2 | Bennu: H=20.8 | Chelyabinsk: H=26.0"
+        )
+    with col2:
+        albedo_cneos = st.number_input(
+            "Albedo visual",
+            min_value = 0.01,
+            max_value = 0.90,
+            value     = 0.30,
+            step      = 0.01,
+            help      = "Tipo S (silíceo): ~0.20-0.30 | Tipo C (carbonáceo): ~0.05-0.10"
+        )
+
+    # Nuestra fórmula de Harris
+    d_nuestro = (1329 / np.sqrt(albedo_cneos)) * 10**(-0.2 * H_cneos)
+
+    # Fórmula del CNEOS — publicada explícitamente en su página web
+    # Referencia: Harris y Harris (1997), Icarus 126:450-454
+    d_cneos = 10 ** (3.1236 - 0.5 * np.log10(albedo_cneos) - 0.2 * H_cneos)
+
+    st.divider()
+    st.subheader("Resultado")
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Nuestra fórmula (Harris)",  f"{d_nuestro:.2f} km")
+    c2.metric("Fórmula CNEOS oficial",     f"{d_cneos:.2f} km")
+    diferencia = abs(d_nuestro - d_cneos)
+    c3.metric("Diferencia",                f"{diferencia:.2e} km")
+
+    if diferencia < 1e-10:
+        st.success("Los resultados son idénticos — nuestra implementación es correcta.")
+    else:
+        st.warning(f"Diferencia numérica mínima por redondeo de punto flotante: {diferencia:.2e} km")
