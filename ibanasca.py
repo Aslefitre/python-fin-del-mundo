@@ -39,3 +39,29 @@ with st.spinner("Descargando catálogo del JPL..."):
 
 st.title("Ibanasca — Defensa Planetaria de Dr. Academy")
 st.caption(f"Catálogo JPL — {len(df):,} asteroides NEA")
+
+st.sidebar.header("Filtros")
+
+clases = ["Todas"] + sorted(df["class"].dropna().unique().tolist())
+clase_sel = st.sidebar.selectbox("Clase orbital", clases)
+
+solo_pha = st.sidebar.checkbox("Solo PHAs")
+
+h_min, h_max = st.sidebar.slider(
+    "Rango de magnitud H",
+    min_value = float(df["H"].min()),
+    max_value = float(df["H"].max()),
+    value     = (float(df["H"].min()), 25.0)
+)
+
+df_filtrado = df.copy()
+if clase_sel != "Todas":
+    df_filtrado = df_filtrado[df_filtrado["class"] == clase_sel]
+if solo_pha:
+    df_filtrado = df_filtrado[df_filtrado["pha"] == "Y"]
+df_filtrado = df_filtrado[
+    (df_filtrado["H"] >= h_min) & (df_filtrado["H"] <= h_max)
+]
+
+st.sidebar.markdown(f"**{len(df_filtrado):,} asteroides** con estos filtros")
+
