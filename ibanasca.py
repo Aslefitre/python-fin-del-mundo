@@ -126,3 +126,36 @@ with tab2:
     st.plotly_chart(fig_peligro, use_container_width=True)
 
     
+
+    st.divider()
+    st.subheader("Familias de Asteroides")
+    st.caption("Distribución orbital por clase — semieje mayor vs excentricidad")
+
+    df_familias = df_filtrado[
+        df_filtrado["a"].notna() & df_filtrado["e"].notna()
+    ].copy()
+
+
+    fig_familias = px.scatter(
+        df_familias,
+        x          = "a",
+        y          = "e",
+        color      = "class",
+        title      = "Familias de Asteroides NEA",
+        labels     = {
+            "a"    : "Semieje Mayor (UA)",
+            "e"    : "Excentricidad",
+            "class": "Clase orbital"
+        },
+        opacity    = 0.5,
+        hover_name = "nombre",
+        hover_data = {"a": ":.3f", "e": ":.3f", "H": True}
+    )
+    fig_familias.add_vline(
+        x=1.0, line_dash="dash", line_color="cyan",
+        annotation_text="Órbita terrestre (1 UA)"
+    )
+    fig_familias.update_xaxes(range=[0, 4])
+    fig_familias.update_yaxes(range=[0, 1])
+    fig_familias.update_layout(height=500)
+    st.plotly_chart(fig_familias, use_container_width=True)
