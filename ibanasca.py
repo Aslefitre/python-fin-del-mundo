@@ -67,7 +67,7 @@ df_filtrado = df_filtrado[
 st.sidebar.markdown(f"**{len(df_filtrado):,} asteroides** con estos filtros")
 
 
-tab1, tab2, tab3 = st.tabs(["📋 Catálogo", "🗺️ Mapas", "🔍 Ficha"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Catálogo", "Mapas", "Ficha", "Simulador", "¿Coincidimos?"])
 
 with tab1:
     st.subheader("Catálogo de Asteroides NEA")
@@ -210,3 +210,109 @@ with tab3:
                 st.error("Este asteroide SI es un PHA")
             else:
                 st.success("Este asteroide NO es un PHA")
+
+with tab4:
+    st.subheader("Simulador de Impacto")
+    st.caption("Calcula la energía y el cráter estimado para un impacto asteroidal")
+
+    col_izq, col_der = st.columns(2)
+
+    with col_izq:
+        diametro_km = st.slider(
+            "Diámetro del asteroide (km)",
+            min_value = 0.01,
+            max_value = 20.0,
+            value     = 0.14,
+            step      = 0.01,
+            format    = "%.2f km"
+        )
+
+        tipo = st.selectbox(
+            "Tipo de asteroide",
+            ["Tipo C — carbonáceo (1,400 kg/m³)",
+             "Tipo S — silíceo (2,700 kg/m³)",
+             "Tipo M — metálico (5,000 kg/m³)"]
+        )
+
+    with col_der:
+        velocidad_kms = st.slider(
+            "Velocidad de impacto (km/s)",
+            min_value = 11.0,
+            max_value = 70.0,
+            value     = 20.0,
+            step      = 0.5,
+            format    = "%.1f km/s"
+        )
+
+        angulo = st.slider(
+            "Ángulo de impacto (°)",
+            min_value = 10,
+            max_value = 90,
+            value     = 45,
+            help      = "90° = impacto vertical directo. Los impactos oblicuos son más frecuentes."
+        )
+
+    # --- Cálculos físicos ---
+    densidades = {
+        "Tipo C — carbonáceo (1,400 kg/m³)" : 1400,
+        "Tipo S — silíceo (2,700 kg/m³)"    : 2700,
+        "Tipo M — metálico (5,000 kg/m³)"   : 5000
+    }
+    rho      = densidades[tipo]
+    r_m      = (diametro_km * 1000) / 2
+    volumen  = (4/3) * np.pi * r_m**3
+    masa_kg  = rho * volumen
+    v_ms     = velocidad_kms * 1000
+    E_J      = 0.5 * masa_kg * v_ms**2
+    E_MT     = E_J / 4.184e15
+    crater_km = diametro_km * 20
+
+    st.divider()
+
+    # --- Resultados ---
+    st.subheader("Resultados")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Masa",              f"{masa_kg:.2e} kg")
+    c2.metric("Energía cinética",  f"{E_J:.2e} J")
+    c3.metric("Energía en Mt TNT", f"{E_MT:.2e} Mt")
+    c4.metric("Cráter estimado",   f"{crater_km:.2f} km")
+
+    st.divider()
+
+    # --- Comparación histórica ---
+    st.subheader("¿Qué tan grande es esa energía?")
+
+    referencias = {
+        "Bomba de Hiroshima"        : 0.015,
+        "Chelyabinsk 2013"          : 0.5,
+        "Bomba Castle Bravo (EEUU)" : 15.0,
+        "Krakatoa 1883"             : 200.0,
+        "Chicxulub (~KT)"           : 100_000_000.0
+    }
+
+    filas = []
+    for evento, e_ref in referencias.items():
+        if E_MT >= e_ref:
+            ratio = E_MT / e_ref
+            comparacion = f"{ratio:.1f}× más grande"
+        else:
+            ratio = e_ref / E_MT
+            comparacion = f"{ratio:.1f}× más pequeño"
+        filas.append({"Evento de referencia": evento,
+                      "Energía (Mt TNT)": e_ref,
+                      "Comparación": comparacion})
+
+    st.dataframe(
+        pd.DataFrame(filas),
+        use_container_width = True,
+        hide_index          = True
+    )
+
+    if E_MT < 0.015:
+        st.success("Energía menor a Hiroshima — evento local menor")
+    elif E_MT < 15:
+        st.warning("Energía entre Hiroshima y Castle Bravo — evento regional severo")
+    elif E_MT < 10_000:
+        st.error("Energía entre Castle Bravo y Krakatoa — evento continental catastrófico")
+    else:
+        st.error("Energía comparable o superior a Chicxulub — evento de extinción masiva")
