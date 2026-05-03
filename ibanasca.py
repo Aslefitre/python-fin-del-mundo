@@ -381,11 +381,11 @@ with tab6:
     st.write("""
     Este modelo fue entrenado con datos reales del JPL.
     Usa regresión lineal sobre variables logarítmicas para predecir
-    el diámetro de un asteroide a partir de su magnitud H y su albedo.
-    R² = 0.9905 — explica el 99% de la varianza del diámetro.
+    el diámetro de un asteroide a partir de su magnitud absoluta H y su albedo.
+    Con R² igual a 0.9905 explica el 99% de la varianza del diámetro.
     """)
 
-    st.info("Este modelo fue entrenado con datos del JPL.")
+    st.info("Este modelo fue entrenado con datos reales del JPL.")
 
     st.divider()
 
@@ -440,7 +440,7 @@ with tab7:
     Exactitud de 99.97% sobre datos de prueba.
     """)
 
-    st.info("Este modelo fue entrenado con datos del Minor Planet Center (MPC).")
+    st.info("Este modelo fue entrenado con datos reales del Minor Planet Center (MPC).")
 
     st.divider()
 
@@ -479,8 +479,8 @@ with tab7:
     if pred_clf:
         st.error("El modelo clasifica este asteroide como **PHA**")
     else:
-        st.success("El modelo clasifica este asteroide como **No PHA**")
+        st.success("El modelo clasifica este asteroide como **NO PHA**")
 
     c1, c2 = st.columns(2)
-    c1.metric("Probabilidad PHA",    f"{prob_clf[1]*100:.1f}%")
-    c2.metric("Probabilidad No PHA", f"{prob_clf[0]*100:.1f}%")
+    c1.metric("Probabilidad de ser PHA",    f"{prob_clf[1]*100:.1f}%")
+    c2.metric("Probabilidad de no ser PHA", f"{prob_clf[0]*100:.1f}%")
