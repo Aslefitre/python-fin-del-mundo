@@ -377,7 +377,7 @@ modelo_reg = joblib.load("modelo_regresion.joblib")
 modelo_clf = joblib.load("modelo_clasificacion.joblib")
 
 with tab6:
-    st.subheader("Predicción de Diámetro — Modelo de Regresión")
+    st.subheader("Predicción de Diámetro con Modelo de Regresión")
     st.write("""
     Este modelo fue entrenado con datos reales del JPL.
     Usa regresión lineal sobre variables logarítmicas para predecir
@@ -431,56 +431,3 @@ with tab6:
     c2.metric("Fórmula de Harris",        f"{d_harris:.3f} km")
     diferencia_reg = abs(d_predicho - d_harris)
     c3.metric("Diferencia",               f"{diferencia_reg:.3f} km")
-
-with tab7:
-    st.subheader("Clasificador PHA — Árbol de Decisión")
-    st.write("""
-    Este modelo fue entrenado con datos del MPC.
-    Usa un árbol de decisión para clasificar si un asteroide es Potencialmente Peligroso (PHA) o no.
-    Exactitud de 99.97% sobre datos de prueba.
-    """)
-
-    st.info("Este modelo fue entrenado con datos reales del Minor Planet Center (MPC).")
-
-    st.divider()
-
-    col1, col2 = st.columns(2)
-    with col1:
-        H_clf = st.slider(
-            "Magnitud absoluta H",
-            min_value = 10.0,
-            max_value = 30.0,
-            value     = 19.2,
-            step      = 0.1,
-            help      = "Apophis: 19.2 | Bennu: 20.8 | Chelyabinsk: 26.0",
-            key       = "H_clf"
-        )
-    with col2:
-        moid_clf = st.slider(
-            "MOID (UA)",
-            min_value = 0.0,
-            max_value = 1.0,
-            value     = 0.03,
-            step      = 0.001,
-            format    = "%.3f UA",
-            help      = "Distancia mínima a la órbita terrestre",
-            key       = "moid_clf"
-        )
-
-    # El modelo fue entrenado con 5 features pero H y moid
-    # son los únicos que usa
-    X_nuevo  = [[H_clf, moid_clf, 0.5, 1.0, 10.0]]
-    pred_clf = modelo_clf.predict(X_nuevo)[0]
-    prob_clf = modelo_clf.predict_proba(X_nuevo)[0]
-
-    st.divider()
-    st.subheader("Resultado")
-
-    if pred_clf:
-        st.error("El modelo clasifica este asteroide como **PHA**")
-    else:
-        st.success("El modelo clasifica este asteroide como **NO PHA**")
-
-    c1, c2 = st.columns(2)
-    c1.metric("Probabilidad de ser PHA",    f"{prob_clf[1]*100:.1f}%")
-    c2.metric("Probabilidad de no ser PHA", f"{prob_clf[0]*100:.1f}%")
