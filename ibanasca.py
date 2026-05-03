@@ -377,15 +377,15 @@ modelo_reg = joblib.load("modelo_regresion.joblib")
 modelo_clf = joblib.load("modelo_clasificacion.joblib")
 
 with tab6:
-    st.subheader("Predicción de Diámetro — Modelo de Regresión")
+    st.subheader("📏 Predicción de Diámetro — Modelo de Regresión")
     st.write("""
-    Este modelo fue entrenado en la lección 29 con datos reales del JPL.
+    Este modelo fue entrenado con datos reales del JPL.
     Usa regresión lineal sobre variables logarítmicas para predecir
     el diámetro de un asteroide a partir de su magnitud H y su albedo.
     R² = 0.9905 — explica el 99% de la varianza del diámetro.
     """)
 
-    st.info("Este modelo fue entrenado con datos del JPL. Usa valores de H y albedo del catálogo JPL para mejores resultados.")
+    st.info("Este modelo fue entrenado con datos del JPL.")
 
     st.divider()
 
@@ -432,23 +432,6 @@ with tab6:
     diferencia_reg = abs(d_predicho - d_harris)
     c3.metric("Diferencia",               f"{diferencia_reg:.3f} km")
 
-    st.divider()
-    st.subheader("¿Qué aprendió el modelo?")
-    st.write("""
-    El modelo de regresión aprendió los coeficientes de la relación lineal
-    entre H, log₁₀(albedo) y log₁₀(diámetro) directamente de los datos del JPL —
-    sin que nosotros le dijéramos cuál era la fórmula.
-    El resultado es casi idéntico a la fórmula de Harris porque los datos
-    del JPL fueron generados con esa misma física.
-    """)
-
-    coefs = pd.DataFrame({
-        "Feature"     : ["H", "log₁₀(albedo)"],
-        "Coeficiente" : modelo_reg.coef_
-    })
-    st.dataframe(coefs, use_container_width=True, hide_index=True)
-    st.caption(f"Intercepto: {modelo_reg.intercept_:.4f}")
-
 with tab7:
     st.subheader("Clasificador PHA — Árbol de Decisión")
     st.write("""
@@ -458,13 +441,13 @@ with tab7:
     Accuracy = 99.97% sobre datos de prueba.
     """)
 
-    st.info("Este modelo fue entrenado con datos del MPC. Para mejores resultados usa valores orbitales del catálogo MPC.")
+    st.info("Este modelo fue entrenado con datos del Minor Planet Center (MPC).")
 
     st.divider()
 
     col1, col2 = st.columns(2)
     with col1:
-        H_clf  = st.slider(
+        H_clf = st.slider(
             "Magnitud absoluta H",
             min_value = 10.0,
             max_value = 30.0,
@@ -473,6 +456,7 @@ with tab7:
             help      = "Apophis: 19.2 | Bennu: 20.8 | Chelyabinsk: 26.0",
             key       = "H_clf"
         )
+    with col2:
         moid_clf = st.slider(
             "MOID (UA)",
             min_value = 0.0,
@@ -483,34 +467,10 @@ with tab7:
             help      = "Distancia mínima a la órbita terrestre",
             key       = "moid_clf"
         )
-        e_clf = st.slider(
-            "Excentricidad",
-            min_value = 0.0,
-            max_value = 0.99,
-            value     = 0.19,
-            step      = 0.01,
-            key       = "e_clf"
-        )
-    with col2:
-        a_clf = st.slider(
-            "Semieje mayor (UA)",
-            min_value = 0.1,
-            max_value = 4.0,
-            value     = 0.92,
-            step      = 0.01,
-            key       = "a_clf"
-        )
-        i_clf = st.slider(
-            "Inclinación (°)",
-            min_value = 0.0,
-            max_value = 90.0,
-            value     = 3.3,
-            step      = 0.1,
-            key       = "i_clf"
-        )
 
-    # Predicción del clasificador
-    X_nuevo  = [[H_clf, moid_clf, e_clf, a_clf, i_clf]]
+    # El modelo fue entrenado con 5 features pero H y moid
+    # son los únicos que usa
+    X_nuevo  = [[H_clf, moid_clf, 0.5, 1.0, 10.0]]
     pred_clf = modelo_clf.predict(X_nuevo)[0]
     prob_clf = modelo_clf.predict_proba(X_nuevo)[0]
 
@@ -525,36 +485,3 @@ with tab7:
     c1, c2 = st.columns(2)
     c1.metric("Probabilidad PHA",    f"{prob_clf[1]*100:.1f}%")
     c2.metric("Probabilidad No PHA", f"{prob_clf[0]*100:.1f}%")
-
-    st.divider()
-    st.subheader("¿Cómo tomó la decisión el árbol?")
-    st.write("""
-    El árbol de decisión aprendió exactamente dos preguntas para clasificar cualquier asteroide:
-    """)
-
-    st.code("""
-|--- moid <= 0.05
-|   |--- H <= 22.01
-|   |   |--- clase: PHA
-|   |--- H >  22.01
-|   |   |--- clase: No PHA
-|--- moid >  0.05
-|   |--- clase: No PHA
-    """)
-
-    st.write("""
-    Son exactamente los umbrales oficiales que definen un PHA — el modelo los aprendió
-    solo, a partir de los datos, sin que nadie se los dijera.
-    Eso es lo que hace el Machine Learning: encontrar patrones en los datos.
-    En este caso el patrón era tan claro que el árbol lo descubrió perfectamente.
-    """)
-
-    st.divider()
-    st.subheader("Importancia de los features")
-    importancias_df = pd.DataFrame({
-        "Feature"      : ["H", "moid", "e", "a", "i"],
-        "Importancia"  : modelo_clf.feature_importances_
-    }).sort_values("Importancia", ascending=False)
-
-    st.dataframe(importancias_df, use_container_width=True, hide_index=True)
-    st.caption("H y moid explican el 100% de la información — e, a e i no aportan nada adicional.")
