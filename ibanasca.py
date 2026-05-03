@@ -397,7 +397,8 @@ with tab6:
             max_value = 30.0,
             value     = 19.2,
             step      = 0.1,
-            help      = "Apophis: 19.2 | Bennu: 20.8 | Chelyabinsk: 26.0"
+            help      = "Apophis: 19.2 | Bennu: 20.8 | Chelyabinsk: 26.0",
+            key       = "H_reg"
         )
     with col2:
         albedo_reg = st.slider(
@@ -406,7 +407,8 @@ with tab6:
             max_value = 0.90,
             value     = 0.30,
             step      = 0.01,
-            help      = "Tipo S: ~0.20-0.30 | Tipo C: ~0.05-0.10"
+            help      = "Tipo S: ~0.20-0.30 | Tipo C: ~0.05-0.10",
+            key       = "albedo_reg"
         )
 
     # Paso 1 — transformamos el albedo igual que en el entrenamiento
@@ -468,7 +470,8 @@ with tab7:
             max_value = 30.0,
             value     = 19.2,
             step      = 0.1,
-            help      = "Apophis: 19.2 | Bennu: 20.8 | Chelyabinsk: 26.0"
+            help      = "Apophis: 19.2 | Bennu: 20.8 | Chelyabinsk: 26.0",
+            key       = "H_clf"
         )
         moid_clf = st.slider(
             "MOID (UA)",
@@ -477,14 +480,16 @@ with tab7:
             value     = 0.03,
             step      = 0.001,
             format    = "%.3f UA",
-            help      = "Distancia mínima a la órbita terrestre"
+            help      = "Distancia mínima a la órbita terrestre",
+            key       = "moid_clf"
         )
         e_clf = st.slider(
             "Excentricidad",
             min_value = 0.0,
             max_value = 0.99,
             value     = 0.19,
-            step      = 0.01
+            step      = 0.01,
+            key       = "e_clf"
         )
     with col2:
         a_clf = st.slider(
@@ -492,14 +497,16 @@ with tab7:
             min_value = 0.1,
             max_value = 4.0,
             value     = 0.92,
-            step      = 0.01
+            step      = 0.01,
+            key       = "a_clf"
         )
         i_clf = st.slider(
             "Inclinación (°)",
             min_value = 0.0,
             max_value = 90.0,
             value     = 3.3,
-            step      = 0.1
+            step      = 0.1,
+            key       = "a_clf"
         )
 
     # Predicción del clasificador
