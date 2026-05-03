@@ -506,7 +506,7 @@ with tab7:
             max_value = 90.0,
             value     = 3.3,
             step      = 0.1,
-            key       = "a_clf"
+            key       = "i_clf"
         )
 
     # Predicción del clasificador
