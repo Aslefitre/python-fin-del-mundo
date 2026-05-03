@@ -377,7 +377,7 @@ modelo_reg = joblib.load("modelo_regresion.joblib")
 modelo_clf = joblib.load("modelo_clasificacion.joblib")
 
 with tab6:
-    st.subheader("📏 Predicción de Diámetro — Modelo de Regresión")
+    st.subheader("Predicción de Diámetro — Modelo de Regresión")
     st.write("""
     Este modelo fue entrenado con datos reales del JPL.
     Usa regresión lineal sobre variables logarítmicas para predecir
@@ -435,10 +435,9 @@ with tab6:
 with tab7:
     st.subheader("Clasificador PHA — Árbol de Decisión")
     st.write("""
-    Este modelo fue entrenado en la lección 31 con datos del MPC.
-    Usa un árbol de decisión con profundidad 2 para clasificar
-    si un asteroide es Potencialmente Peligroso (PHA) o no.
-    Accuracy = 99.97% sobre datos de prueba.
+    Este modelo fue entrenado con datos del MPC.
+    Usa un árbol de decisión para clasificar si un asteroide es Potencialmente Peligroso (PHA) o no.
+    Exactitud de 99.97% sobre datos de prueba.
     """)
 
     st.info("Este modelo fue entrenado con datos del Minor Planet Center (MPC).")
