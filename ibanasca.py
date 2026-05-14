@@ -487,7 +487,7 @@ with tab7:
 
 st.sidebar.divider()
 st.sidebar.image("ibanasca.png", use_column_width=True)
-with st.sidebar.expander("¿Qué significa Ibanasca?"):
+with st.sidebar.expander("¿Quién fue Ibanasca?"):
     st.write("""
     En el corazón de los Andes colombianos, allí donde las montañas parecen tocar 
     el cielo, floreció hace siglos el pueblo Pijao, una confederación de guerreros 
