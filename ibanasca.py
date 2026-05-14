@@ -40,6 +40,7 @@ with st.spinner("Descargando catálogo del JPL..."):
 st.title("Ibanasca — Defensa Planetaria de Dr.Z Academy")
 st.caption(f"Catálogo JPL — {len(df):,} asteroides NEA")
 
+st.sidebar.image("drz_logo.png", width=120)
 st.sidebar.header("Filtros")
 
 clases = ["Todas"] + sorted(df["class"].dropna().unique().tolist())
