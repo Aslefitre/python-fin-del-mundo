@@ -487,7 +487,7 @@ with tab7:
 
 st.sidebar.divider()
 
-with st.sidebar.expander("🌿 ¿Qué significa Ibanasca?"):
+with st.sidebar.expander("¿Qué significa Ibanasca?"):
     st.write("""
     En el corazón de los Andes colombianos, allí donde las montañas parecen tocar 
     el cielo, floreció hace siglos el pueblo Pijao, una confederación de guerreros 
