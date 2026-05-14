@@ -486,7 +486,7 @@ with tab7:
     c2.metric("Probabilidad de no ser PHA", f"{prob_clf[0]*100:.1f}%")
 
 st.sidebar.divider()
-
+st.sidebar.image("ibanasca.png", use_column_width=True)
 with st.sidebar.expander("¿Qué significa Ibanasca?"):
     st.write("""
     En el corazón de los Andes colombianos, allí donde las montañas parecen tocar 
@@ -505,7 +505,7 @@ with st.sidebar.expander("¿Qué significa Ibanasca?"):
     
     Cuenta la leyenda cuenta que, al ser condenada por los españoles a morir en la 
     hoguera bajo acusaciones de brujería, un enviado del dios fuego la cubrió para 
-    purificarla, y su espíritu ascendió hasta convertirse en la diosa de los nevados.
+    purificarla y su espíritu ascendió hasta convertirse en la diosa de los nevados.
     
     En la cosmogonía pijao, Ibanasca dirigía una viga de oro desde los cerros hacia el cielo
     y enviaba advertencias para proteger a su pueblo de amenazas desconocidas.
