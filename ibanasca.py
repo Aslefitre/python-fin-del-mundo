@@ -484,3 +484,52 @@ with tab7:
     c1, c2 = st.columns(2)
     c1.metric("Probabilidad de ser PHA",    f"{prob_clf[1]*100:.1f}%")
     c2.metric("Probabilidad de no ser PHA", f"{prob_clf[0]*100:.1f}%")
+
+st.sidebar.divider()
+
+with st.sidebar.expander("🌿 ¿Qué significa Ibanasca?"):
+    st.write("""
+    En el corazón de los Andes colombianos, allí donde las montañas parecen tocar 
+    el cielo, floreció hace siglos el pueblo Pijao, una confederación de guerreros 
+    y sabios que dominó un territorio que hoy comprende los departamentos del Tolima, 
+    Quindío, Huila, Caldas y partes de Antioquia y el Valle del Cauca.
+    
+    En el centro de este mundo andino surgió la figura de **Ibanasca**, una mujer cuya
+    historia desafía los límites entre lo humano y lo divino.
+    
+    Ibanasca fue una cacica, líder política y chamán medicinal que guiaba a su pueblo
+    con una sabiduría profunda sobre la vida y la tierra. Alrededor de 1550, cuando 
+    las tropas del conquistador español Andrés López de Galarza llegaron al cañón del 
+    río Combeima buscando tesoros materiales, se encontraron con una resistencia 
+    feroz liderada por ella. 
+    
+    Cuenta la leyenda cuenta que, al ser condenada por los españoles a morir en la 
+    hoguera bajo acusaciones de brujería, un enviado del dios fuego la cubrió para 
+    purificarla, y su espíritu ascendió hasta convertirse en la diosa de los nevados.
+    
+    En la cosmogonía pijao, Ibanasca dirigía una viga de oro desde los cerros hacia el cielo
+    y enviaba advertencias para proteger a su pueblo de amenazas desconocidas.
+
+    Esta aplicación lleva su nombre porque así como en la cosmogonía pijao Ibanasca 
+    representa una fuerza protectora frente a lo desconocido, esta app usa ciencia, 
+    datos y código para mirar hacia el cielo y anticipar amenazas que vienen del espacio. 
+
+    Donde antes la montaña, el fuego, el viento y la viga de oro eran símbolos de 
+    protección, hoy aparecen los telescopios, radares, simulaciones y algoritmos.
+
+    **Ibanasca es una forma de recordar que proteger la vida también empieza por mirar el cielo.**
+    """)
+
+
+st.sidebar.divider()
+
+with st.sidebar.expander("Acerca de"):
+    st.write("""
+    **Ibanasca — Defensa Planetaria** es la aplicación final del curso
+    *Python para el Fin del Mundo* de **Dr. Z Academy**.
+
+    Construida con datos reales del JPL y el MPC, integra visualización
+    interactiva, simulación física y modelos de Machine Learning para
+    el análisis de asteroides potencialmente peligrosos.
+  
+    """)
