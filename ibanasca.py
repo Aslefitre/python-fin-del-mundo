@@ -521,12 +521,10 @@ with st.sidebar.expander("🌿 ¿Qué significa Ibanasca?"):
     """)
 
 
-st.sidebar.divider()
-
 with st.sidebar.expander("Acerca de"):
-    st.write("""
+    st.markdown("""
     **Ibanasca — Defensa Planetaria** es la aplicación final del curso
-    *Python para el Fin del Mundo* de **Dr. Z Academy**.
+    *Python para el Fin del Mundo* de **[Dr. Z Academy](https://drz.academy/)**.
 
     Construida con datos reales del JPL y el MPC, integra visualización
     interactiva, simulación física y modelos de Machine Learning para
